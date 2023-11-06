@@ -1,0 +1,111 @@
+operarios = {
+    12345: {"contraseña": "operario123", "nombre": "Juan"},
+    # Agrega más operarios según sea necesario
+}
+
+supervisores = {
+    54321: {"contraseña": "supervisor123", "nombre": "Carlos"},
+    # Agrega más supervisores según sea necesario
+}
+
+datos_operarios = []
+
+intentos_operario = {}
+
+intentos_supervisor = {}
+
+def ingresar_operario():
+    while True:
+        numero_operario = int(input("Ingrese número de operario: "))
+        if numero_operario in operarios:
+            if intentos_operario.get(numero_operario, 0) >= 3:
+                print("Contraseña incorrecta. El sistema está bloqueado.")
+                break
+            contraseña = input("Ingrese contraseña: ")
+            if contraseña == operarios[numero_operario]["contraseña"]:
+                orden = int(input("Ingrese N° de orden (8 dígitos): "))
+                fecha = input("Ingrese fecha: ")
+                kilometraje = float(input("Ingrese kilometraje recorrido: "))
+                petroleo = float(input("Ingrese petróleo consumido: "))
+                hora_inicio = input("Ingrese hora de inicio de la ruta: ")
+                hora_termino = input("Ingrese hora de término de la ruta: ")
+                datos_operarios.append({
+                    "numero_operario": numero_operario,
+                    "orden": orden,
+                    "fecha": fecha,
+                    "kilometraje": kilometraje,
+                    "petroleo": petroleo,
+                    "hora_inicio": hora_inicio,
+                    "hora_termino": hora_termino
+                })
+                print("Datos registrados correctamente.")
+                break
+            else:
+                print("Contraseña incorrecta. Inténtelo de nuevo.")
+                intentos_operario[numero_operario] = intentos_operario.get(numero_operario, 0) + 1
+        else:
+            print("Número de operario incorrecto. Inténtelo de nuevo.")
+
+def ingresar_supervisor():
+    while True:
+        numero_supervisor = int(input("Ingrese número de supervisor: "))
+        if numero_supervisor in supervisores:
+            if intentos_supervisor.get(numero_supervisor, 0) >= 3:
+                print("Contraseña incorrecta. El sistema está bloqueado.")
+                break
+            contraseña = input("Ingrese contraseña: ")
+            if contraseña == supervisores[numero_supervisor]["contraseña"]:
+                while True:
+                    print("Menú Supervisor:")
+                    print("1. Ver Total Kilometraje registrado (última semana)")
+                    print("2. Ver Total Petróleo Consumido (última semana)")
+                    print("3. Ver promedio Hora de inicio (última semana)")
+                    print("4. Ver promedio Hora término (última semana)")
+                    print("5. Ver información por Operario")
+                    print("6. Volver al Menú principal")
+                    opcion_supervisor = int(input("Seleccione una opción: "))
+
+                    if opcion_supervisor == 1:
+                        total_kilometraje = sum(d["kilometraje"] for d in datos_operarios)
+                        print(f"Total Kilometraje registrado (última semana): {total_kilometraje}")
+                    elif opcion_supervisor == 2:
+                        total_petroleo = sum(d["petroleo"] for d in datos_operarios)
+                        print(f"Total Petróleo Consumido (última semana): {total_petroleo}")
+                    elif opcion_supervisor == 3:
+                        promedio_inicio = sum(int(d["hora_inicio"].split(':')[0]) for d in datos_operarios) / len(datos_operarios)
+                        print(f"Promedio Hora de inicio (última semana): {promedio_inicio:.2f}")
+                    elif opcion_supervisor == 4:
+                        promedio_termino = sum(int(d["hora_termino"].split(':')[0]) for d in datos_operarios) / len(datos_operarios)
+                        print(f"Promedio Hora término (última semana): {promedio_termino:.2f}")
+                    elif opcion_supervisor == 5:
+                        numero_operario = int(input("Ingrese número de Operario: "))
+                        if any(d["numero_operario"] == numero_operario for d in datos_operarios):
+                            datos_operario = [d for d in datos_operarios if d["numero_operario"] == numero_operario]
+                            print("Información del Operario:")
+                            print("Número de orden | Fecha | Kilometraje | Petróleo | Hora de inicio | Hora de término")
+                            for dato in datos_operario:
+                                print(f"{dato['orden']} | {dato['fecha']} | {dato['kilometraje']} | {dato['petroleo']} | {dato['hora_inicio']} | {dato['hora_termino']}")
+                        else:
+                            print("Operario no encontrado.")
+                    elif opcion_supervisor == 6:
+                        break
+                    else:
+                        print("Opción inválida. Inténtelo de nuevo.")
+            else:
+                print("Contraseña incorrecta. Inténtelo de nuevo.")
+                intentos_supervisor[numero_supervisor] = intentos_supervisor.get(numero_supervisor, 0) + 1
+        else:
+            print("Número de supervisor incorrecto. Inténtelo de nuevo.")
+
+while True:
+    print("Menú Principal:")
+    print("1. Ingreso Operario")
+    print("2. Ingreso Supervisor")
+    opcion = int(input("Seleccione una opción: "))
+
+    if opcion == 1:
+        ingresar_operario()
+    elif opcion == 2:
+        ingresar_supervisor()
+    else:
+        print("Opción inválida. Inténtelo de nuevo.")
